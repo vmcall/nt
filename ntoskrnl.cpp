@@ -32,9 +32,9 @@ uint64_t __fastcall MmAllocateIndependentPages(SIZE_T number_of_bytes, ULONG nod
             MiWaitForFreePage(&MiSystemPartition);
         }
 
-        new_pte = (_MMPTE*)(((uint64_t)new_pte ^ PFN_TO_PAGE(page_frame_index)) & 0xFFFFFFFFF000 ^ (uint64_t)new_pte);
+        new_pte = (_MMPTE*)(PFN_TO_PAGE(page_frame_index) + (uint64_t)new_pte & 0xFFF);
 
-	_MMPFN* pfn_entry = (_MMPFN*)(0xFFFFFa8000000000 + sizeof(_MMPFN) * page_frame_index);
+	_MMPFN* pfn_entry = (_MMPFN*)(0xFFFFFa8000000000/*END OF VIRTUAL ADDRESS SPACE*/ + sizeof(_MMPFN) * page_frame_index);
         MiInitializePfn(pfn_entry, pte, 4, 4);
 
         pte->u.Long = (uint64_t)new_pte; // set available pte to new, valid pte
