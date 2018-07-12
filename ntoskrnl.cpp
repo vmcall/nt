@@ -1,12 +1,12 @@
 uint64_t __fastcall MmAllocateIndependentPages(SIZE_T number_of_bytes, ULONG node) {
     SIZE_T page_count = BYTES_TO_PAGES(number_of_bytes);
-    _MMPTE* pte = MiReservePtes((_MMPTE*)&g_pt_base, (uint32_t)page_count);
+    _MMPTE* pte = MiReservePtes((_MMPTE*)&g_MiSystemPteInfo, (uint32_t)page_count);
     if (!pte) // null if no pte's can be found
         return 0;
 
     // If no non paged pool memory is available, return 0
     if (!MiObtainNonPagedPoolCharges(page_count, 1)) {
-        MiReleasePtes((_MMPTE*)&g_pt_base, pte, page_count);
+        MiReleasePtes((_MMPTE*)&g_MiSystemPteInfo, pte, page_count);
         return 0;
     }
 
